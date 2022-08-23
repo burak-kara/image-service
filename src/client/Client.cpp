@@ -1,13 +1,9 @@
 #include "Client.h"
 
-Client::Client(const ImageHelper &imageHelper) : imageHelper(imageHelper) {
+Client::Client(const ImageHelper &imageHelper, const char *url) : imageHelper(imageHelper), sendBuffer(url) {
     this->connectSocket = INVALID_SOCKET;
     this->result = nullptr;
     this->ptr = nullptr;
-//    this->sendBuffer = "GET /v1/resize:640x360/url:upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Wells_Cathedral_Organ%2C_Somerset%2C_UK_-_Diliff.jpg/800px-Wells_Cathedral_Organ%2C_Somerset%2C_UK_-_Diliff.jpg HTTP/1.1\r\nHost: localhost\r\n\r\n\r\n";
-    this->sendBuffer = "GET /v1/rotate:90/url:upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Wells_Cathedral_Organ%2C_Somerset%2C_UK_-_Diliff.jpg/800px-Wells_Cathedral_Organ%2C_Somerset%2C_UK_-_Diliff.jpg HTTP/1.1\r\nHost: localhost\r\n\r\n\r\n";
-//    this->sendBuffer = "GET /v1/grayscale/url:upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Wells_Cathedral_Organ%2C_Somerset%2C_UK_-_Diliff.jpg/800px-Wells_Cathedral_Organ%2C_Somerset%2C_UK_-_Diliff.jpg HTTP/1.1\r\nHost: localhost\r\n\r\n\r\n";
-//    this->sendBuffer = "GET /v1/crop:100x100x90x90/url:upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Wells_Cathedral_Organ%2C_Somerset%2C_UK_-_Diliff.jpg/800px-Wells_Cathedral_Organ%2C_Somerset%2C_UK_-_Diliff.jpg HTTP/1.1\r\nHost: localhost\r\n\r\n\r\n";
 }
 
 void Client::create() {

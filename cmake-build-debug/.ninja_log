@@ -1,0 +1,5 @@
+# ninja log v5
+0	1139	6829547751994890	CMakeFiles/ImageServiceClient.dir/src/client/main.cpp.obj	1e9f122a7380d018
+1155	1700	6829547757012950	ImageServiceClient.exe	b3b93950aa6343e0
+1	765	6829550587214071	CMakeFiles/ImageServiceClient.dir/src/client/main.cpp.obj	1e9f122a7380d018
+770	1060	6829550589982236	ImageServiceClient.exe	b3b93950aa6343e0

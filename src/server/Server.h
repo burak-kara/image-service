@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <sstream>
 #include <vector>
+#include <stdexcept>
 #include <Magick++.h>
 #include "image-helper/ImageHelper.cpp"
 #include "size/Size.cpp"
@@ -80,7 +81,13 @@ private:
 
     void processImage();
 
-    std::vector<std::string> getBuffer();
+    std::string getQuery();
+
+    std::string splitOperation(const std::string &urlPath);
+
+    static std::string getOperationPart(const std::string &operationPart);
+
+    void assignOperation(const std::string &operationPart);
 
     void operateResize(Image &image, std::vector<std::string> &sizes);
 

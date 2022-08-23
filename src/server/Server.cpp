@@ -76,9 +76,14 @@ void Server::accept() {
 
 void Server::receive() {
     do {
-        this->get();
-        this->processBuffer();
-        this->processImage();
+        try {
+            this->get();
+            this->processBuffer();
+            this->processImage();
+        } catch (const std::exception &e) {
+            printf("%s\n", e.what());
+            Server::sendError(e.what());
+        }
     } while (this->iResult > 0);
 }
 
@@ -94,39 +99,67 @@ void Server::get() {
     }
 }
 
-// TODO handle no url case, or not founds
 void Server::processBuffer() {
-    std::vector<std::string> buffer = getBuffer();
-    std::string urlPath = buffer[1];
-    buffer = Helper::split(urlPath, URL_DELIMITER);
-    std::string operationPart = buffer[0];
+    std::string query = getQuery();
+    std::string operationPart = Server::splitOperation(query);
+    Server::assignOperation(operationPart);
+}
+
+std::string Server::getQuery() {
+    std::vector<std::string> buffer = Helper::split(Helper::toString(this->receivedBuffer), ' ');
+    if (buffer.empty()) {
+        throw std::logic_error("Invalid request. Please provide an url and an operation.");
+    }
+    return buffer[0];
+}
+
+// TODO is valid URL
+std::string Server::splitOperation(const std::string &urlPath) {
+    std::vector<std::string> buffer = Helper::split(urlPath, URL_DELIMITER);
+    if (buffer.size() < 2) {
+        throw std::logic_error("Invalid request. Please provide a valid url and an operation.");
+    }
     this->url = "https://" + buffer[1];
-    buffer = Helper::split(operationPart, URL_PATH_DELIMITER);
-    buffer = Helper::split(buffer[2], OPERATION_DELIMITER);
+    return Server::getOperationPart(buffer[0]);
+}
+
+std::string Server::getOperationPart(const std::string &operationPart) {
+    std::vector<std::string> buffer =Helper::split(operationPart, URL_PATH_DELIMITER);
+    if (buffer.size() < 3) {
+        throw std::logic_error("Invalid request. Please provide an operation.");
+    }
+    return buffer[2];
+}
+
+void Server::assignOperation(const std::string &operationPart) {
+    std::vector<std::string> buffer = Helper::split(operationPart, OPERATION_DELIMITER);
+    if (buffer.size() < 2) {
+        throw std::logic_error("Invalid request. Please provide a valid operation.");
+    }
     this->operation = buffer[0];
     this->operationParams = buffer[1];
 }
 
-std::vector<std::string> Server::getBuffer() {
-    return Helper::split(Helper::toString(this->receivedBuffer), ' ');
-}
-
 // TODO image not found, wrong params, wrong param format, wrong operation
 void Server::processImage() {
-    Image image = imageHelper.getImage(this->url);
-    std::vector<std::string> sizes = Helper::split(this->operationParams, OPERATION_SIZE_DELIMITER);
-    if (this->operation == RESIZE_OPERATION) {
-        Server::operateResize(image, sizes);
-    } else if (this->operation == ROTATE_OPERATION) {
-        Server::operateRotate(image, sizes);
-    } else if (this->operation == GRAYSCALE_OPERATION) {
-        Server::operateGrayScale(image, sizes);
-    } else if (this->operation == CROP_OPERATION) {
-        Server::operateCrop(image, sizes);
-    } else {
-        Server::sendError("Operation not found");
+    try {
+        Image image = imageHelper.getImage(this->url);
+        std::vector<std::string> sizes = Helper::split(this->operationParams, OPERATION_SIZE_DELIMITER);
+        if (this->operation == RESIZE_OPERATION) {
+            Server::operateResize(image, sizes);
+        } else if (this->operation == ROTATE_OPERATION) {
+            Server::operateRotate(image, sizes);
+        } else if (this->operation == GRAYSCALE_OPERATION) {
+            Server::operateGrayScale(image, sizes);
+        } else if (this->operation == CROP_OPERATION) {
+            Server::operateCrop(image, sizes);
+        } else {
+            Server::sendError("Operation not found");
+        }
+        Server::sendImage(image);
+    } catch (const std::exception &e) {
+        Server::sendError(e.what());
     }
-    Server::sendImage(image);
 }
 
 void Server::operateResize(Image &image, std::vector<std::string> &sizes) {

@@ -24,7 +24,7 @@ using namespace Magick;
 
 class Client {
 public:
-    explicit Client(const ImageHelper &imageHelper);
+    explicit Client(const ImageHelper &imageHelper, const char *url);
 
     void create();
 
