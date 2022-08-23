@@ -16,7 +16,7 @@
 #pragma comment (lib, "Mswsock.lib")
 #pragma comment (lib, "AdvApi32.lib")
 
-#define BUFFER_LENGTH 512
+#define BUFFER_LENGTH 2048
 #define HOST "127.0.0.1"
 #define PORT "8080"
 

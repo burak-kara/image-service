@@ -19,7 +19,7 @@
 
 #pragma comment (lib, "Ws2_32.lib")
 
-#define BUFFER_LENGTH 512
+#define BUFFER_LENGTH 2048
 #define PORT "8080"
 #define URL_DELIMITER "url:"
 #define URL_PATH_DELIMITER "/"
@@ -60,6 +60,7 @@ private:
     std::string url;
     std::string operation;
     std::string operationParams;
+    bool isSocketClient;
 
     void init();
 
@@ -93,13 +94,13 @@ private:
 
     void operateRotate(Image &image, std::vector<std::string> &sizes);
 
-    void operateGrayScale(Image &image, std::vector<std::string> &sizes);
+    void operateGrayScale(Image &image);
 
     void operateCrop(Image &image, std::vector<std::string> &sizes);
 
     void sendImage(Image &image);
 
-    static std::string prepareResponse(const Blob &blob);
+    std::string prepareResponse(const Blob &blob) const;
 
     void send(const char *response);
 

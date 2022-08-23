@@ -41,17 +41,21 @@ You can find the executables in the Release directory.
 _PS: ImageMagick should be used in Release mode to perform the operations._
 
 - `src/main.cpp` starts the Server
-- `src/client/main.cpp` starts the test Client
-- You can change the image, operation and parameters in the `src/client/main.cpp` file.
-- You can provide the query as an argument to the ImageServiceClient such as:
-  - `/v1/resize:640x360/url:upload.wikimedia.org/wikipedia/commons/6/64/Fabritius-vink.jpg`
-  - `/v1/rotate:90/url:upload.wikimedia.org/wikipedia/commons/6/64/Fabritius-vink.jpg`
-  - `/v1/grayscale/url:upload.wikimedia.org/wikipedia/commons/6/64/Fabritius-vink.jpg`
-  - `/v1/crop:100x100/url:upload.wikimedia.org/wikipedia/commons/6/64/Fabritius-vink.jpg`
-  - `/v1/crop:100x100x90x90/url:upload.wikimedia.org/wikipedia/commons/6/64/Fabritius-vink.jpg`
-  - `/v1/WRONG:100x100x90x90/url:upload.wikimedia.org/wikipedia/commons/6/64/Fabritius-vink.jpg`
+- Go to browser: [http://localhost:8080/v1/resize:640x360/url:upload.wikimedia.org/wikipedia/commons/6/64/Fabritius-vink.jpg](http://localhost:8080/v1/resize:640x360/url:upload.wikimedia.org/wikipedia/commons/6/64/Fabritius-vink.jpg)
+- Sometimes, the server exists after the first request but gives the modified image correctly.
+- You can also test with socket client: `src/client/main.cpp` starts the test Client
+- Change the image, operation and parameters in the `src/client/main.cpp` file.
+- Provide the query as an argument to the ImageServiceClient such as:
+  - `GET /v1/resize:640x360/url:upload.wikimedia.org/wikipedia/commons/6/64/Fabritius-vink.jpg`
+  - `GET /v1/rotate:90/url:upload.wikimedia.org/wikipedia/commons/6/64/Fabritius-vink.jpg`
+  - `GET /v1/grayscale/url:upload.wikimedia.org/wikipedia/commons/6/64/Fabritius-vink.jpg`
+  - `GET /v1/crop:100x100/url:upload.wikimedia.org/wikipedia/commons/6/64/Fabritius-vink.jpg`
+  - `GET /v1/crop:100x100x90x90/url:upload.wikimedia.org/wikipedia/commons/6/64/Fabritius-vink.jpg`
+  - `GET /v1/WRONG:100x100x90x90/url:upload.wikimedia.org/wikipedia/commons/6/64/Fabritius-vink.jpg`
 - Output image `out.jpg`  can be found in root directory. Note that the modified image is returned to the client as a base64 response and written to the file there.
 
 ## TODO
-- Add more operations
 - Add more error handling
+- Not thread safe
+- Bonus 2
+- Bonus 3

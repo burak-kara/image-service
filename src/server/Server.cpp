@@ -7,6 +7,7 @@ Server::Server(const ImageHelper &imageHelper) : imageHelper(imageHelper) {
     this->clientSocket = INVALID_SOCKET;
     this->result = nullptr;
     this->iSendResult = {};
+    this->isSocketClient = false;
 }
 
 void Server::create() {
@@ -107,10 +108,11 @@ void Server::processBuffer() {
 
 std::string Server::getQuery() {
     std::vector<std::string> buffer = Helper::split(Helper::toString(this->receivedBuffer), ' ');
-    if (buffer.empty()) {
+    if (buffer.size() < 2) {
         throw std::logic_error("Invalid request. Please provide an url and an operation.");
     }
-    return buffer[0];
+    this->isSocketClient = buffer.size() == 2;
+    return buffer[1];
 }
 
 // TODO is valid URL
@@ -124,7 +126,7 @@ std::string Server::splitOperation(const std::string &urlPath) {
 }
 
 std::string Server::getOperationPart(const std::string &operationPart) {
-    std::vector<std::string> buffer =Helper::split(operationPart, URL_PATH_DELIMITER);
+    std::vector<std::string> buffer = Helper::split(operationPart, URL_PATH_DELIMITER);
     if (buffer.size() < 3) {
         throw std::logic_error("Invalid request. Please provide an operation.");
     }
@@ -133,11 +135,18 @@ std::string Server::getOperationPart(const std::string &operationPart) {
 
 void Server::assignOperation(const std::string &operationPart) {
     std::vector<std::string> buffer = Helper::split(operationPart, OPERATION_DELIMITER);
-    if (buffer.size() < 2) {
+    if (buffer.empty()) {
         throw std::logic_error("Invalid request. Please provide a valid operation.");
+    } else if (buffer.size() == 1) {
+        if (buffer[0] != GRAYSCALE_OPERATION) {
+            throw std::logic_error("Invalid request. Please provide a valid operation.");
+        }
+        this->operation = buffer[0];
+        this->operationParams = "";
+    } else {
+        this->operation = buffer[0];
+        this->operationParams = buffer[1];
     }
-    this->operation = buffer[0];
-    this->operationParams = buffer[1];
 }
 
 // TODO image not found, wrong params, wrong param format, wrong operation
@@ -150,7 +159,7 @@ void Server::processImage() {
         } else if (this->operation == ROTATE_OPERATION) {
             Server::operateRotate(image, sizes);
         } else if (this->operation == GRAYSCALE_OPERATION) {
-            Server::operateGrayScale(image, sizes);
+            Server::operateGrayScale(image);
         } else if (this->operation == CROP_OPERATION) {
             Server::operateCrop(image, sizes);
         } else {
@@ -180,13 +189,8 @@ void Server::operateRotate(Image &image, std::vector<std::string> &sizes) {
     }
 }
 
-void Server::operateGrayScale(Image &image, std::vector<std::string> &sizes) {
-    if (!sizes.empty()) {
-        Server::sendError("Wrong grayscale params!");
-        return;
-    } else {
-        imageHelper.grayscale(image);
-    }
+void Server::operateGrayScale(Image &image) {
+    imageHelper.grayscale(image);
 }
 
 void Server::operateCrop(Image &image, std::vector<std::string> &sizes) {
@@ -209,9 +213,18 @@ void Server::sendImage(Image &image) {
     Server::send(const_cast<char *>(res.c_str()));
 }
 
-std::string Server::prepareResponse(const Blob &blob) {
-    return "HTTP/1.1 200 OK\r\nContent-Type: image/jpeg\r\nContent-Length: " + std::to_string(blob.length()) +
-           "\r\n\r\n" + blob.base64() + "\r\n__END__";
+std::string Server::prepareResponse(const Blob &blob) const {
+    std::string response = "HTTP/1.1 200 OK\r\nContent-Type: ";
+    if (this->isSocketClient) {
+        response += "image/jpeg\r\nContent-Length: " + std::to_string(blob.length());
+        response += "\r\n\r\n" + blob.base64() + "\r\n__END__";
+    } else {
+        std::string body =
+                R"(<html><body><div><p>Taken from wikpedia</p><img src="data:image/png;base64, )" + blob.base64() +
+                R"(" alt="Wiki image" /></div></body></html>)";
+        response += "text/html\r\nContent-Length: " + std::to_string(body.length()) + "\r\n\r\n" + body;
+    }
+    return response;
 }
 
 void Server::send(const char *response) {
