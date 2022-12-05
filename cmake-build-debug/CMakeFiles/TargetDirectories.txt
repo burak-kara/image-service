@@ -1,4 +1,0 @@
-D:/projects/CLionProjects/ImageService/cmake-build-debug/CMakeFiles/ImageService.dir
-D:/projects/CLionProjects/ImageService/cmake-build-debug/CMakeFiles/ImageServiceClient.dir
-D:/projects/CLionProjects/ImageService/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/projects/CLionProjects/ImageService/cmake-build-debug/CMakeFiles/rebuild_cache.dir

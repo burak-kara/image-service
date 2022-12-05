@@ -1,7 +1,0 @@
-# ninja log v5
-1	1058	6829602351569312	CMakeFiles/ImageService.dir/src/main.cpp.obj	b30656fcd085d0bc
-1065	1187	6829602352878303	ImageService.exe	6c76b51f7e3fdb26
-1	848	6829602540520249	CMakeFiles/ImageServiceClient.dir/src/client/main.cpp.obj	d039873b60acb15c
-855	974	6829602541771117	ImageServiceClient.exe	41221d16518f038d
-1	872	6829602723936009	CMakeFiles/ImageServiceClient.dir/src/client/main.cpp.obj	d039873b60acb15c
-874	1006	6829602725269889	ImageServiceClient.exe	41221d16518f038d
